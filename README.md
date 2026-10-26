@@ -1,4 +1,4 @@
-# The UK's Leverage Paradox: Unmasking Sectoral Fragility to Inform Private Non-Financial Corporation Strategy
+# UK Corporate Balance Sheets & Sectoral Profitability: An Empirical ONS Analysis (2010–2024)
 
 [![Python](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://www.python.org/)
 [![License](https://img.shields.io/badge/License-OGL%20v3.0-green.svg)](https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/)
@@ -32,7 +32,7 @@ Traditional aggregate macroeconomic reports often treat the UK corporate sector 
 ## 🔬 Research Hypotheses & Methodology
 
 The analysis evaluates three primary research hypotheses:
-- **$H_1$ (Fragility Hypothesis)**: Aggregate PNFC balance sheet growth is accompanied by sustained gross debt liabilities, maintaining exposure to interest rate tightening.
+- **$H_1$ (Fragility Hypothesis) — Nuanced / Partly Supported**: While gross financial liabilities expanded to £5.91T, aggregate corporate net worth transitioned into positive territory post-2018 as tangible asset growth outpaced debt additions. Refinancing fragility is concentrated specifically in the ~£1.70T debt-stock component (loans and debt securities) rather than overall corporate equity.
 - **$H_2$ (Heterogeneity Hypothesis)**: Return on capital is structurally divergent; service corporations exhibit low volatility while Continental Shelf entities drive cyclical swings.
 - **$H_3$ (Investment Efficiency Hypothesis)**: Capital expenditures (GFCF) do not guarantee immediate profitability improvements and exhibit lag or decoupling.
 
@@ -228,7 +228,7 @@ uk-leverage-paradox-analysis/
 1. **Office for National Statistics (ONS)** (2024). *Profitability of UK companies reference tables (2024 Q2)*. [ONS Dataset Reference](https://www.ons.gov.uk/economy/nationalaccounts/uksectoraccounts/datasets/profitabilityofukcompaniesreferencetable)
 2. **Office for National Statistics (ONS)** (2024). *The National Balance Sheet estimates (2024 Release)*. [ONS Dataset Reference](https://www.ons.gov.uk/economy/nationalaccounts/uksectoraccounts/datasets/thenationalbalancesheetestimates/current)
 3. **Office for National Statistics (ONS)** (2024). *UK Economic Accounts: Financial and non-financial corporations sector (2023 Q2)*. [ONS Dataset Reference](https://www.ons.gov.uk/economy/nationalaccounts/uksectoraccounts/datasets/ukeconomicaccountsfinancialandnonfinancialcorporationssector/current)
-4. **Siddiqui, Rafi Uz Zaman** (2025). *The UK's Leverage Paradox: Unmasking Sectoral Fragility to Inform Private Non-Financial Corporation Strategy*. Project Research Report.
+4. **Siddiqui, Rafi Uz Zaman** (2025). *UK Corporate Balance Sheets & Sectoral Profitability: An Empirical ONS Analysis (2010–2024)*. Project Research Report.
 
 ---
 

@@ -1,6 +1,6 @@
 """
-UK Leverage Paradox Analysis Package
-====================================
+UK Corporate Balance Sheets & Sectoral Profitability Package
+============================================================
 Empirical Economic & Data Science Analysis
 """
 
