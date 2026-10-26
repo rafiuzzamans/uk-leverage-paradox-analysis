@@ -9,29 +9,48 @@ import pandas as pd
 import numpy as np
 
 
-def load_ons_quarterly_data_excel(filepath: str, sheet_name: str) -> pd.DataFrame:
+def load_ons_quarterly_data_excel(filepath: str, sheet_name: str, table_index: int = 2) -> pd.DataFrame:
     """
     Load raw ONS quarterly spreadsheet data, strip headers, map quarterly time strings
     to standard calendar period ends (e.g., '1997 Q1' -> '1997-03-31'), and cast columns
     to numeric types.
+    
+    If a worksheet stacks multiple tables (e.g., Table 1 Not Seasonally Adjusted and
+    Table 2 Seasonally Adjusted in ONS capital expenditure sheets), table_index selects
+    the target table (default: 2 for Seasonally Adjusted).
     """
-    df_raw = pd.read_excel(filepath, sheet_name=sheet_name, header=3)
+    df_raw_full = pd.read_excel(filepath, sheet_name=sheet_name, header=None)
+    table_markers = df_raw_full[df_raw_full.iloc[:, 0].astype(str).str.contains(r'^Table \d+:', case=False, na=False)].index.tolist()
+    
+    if len(table_markers) > 1:
+        if table_index == 2 and len(table_markers) >= 2:
+            start_row = table_markers[1] + 1
+            df_raw = df_raw_full.iloc[start_row + 1:].copy()
+            df_raw.columns = df_raw_full.iloc[start_row].values
+        else:
+            end_row = table_markers[1]
+            df_raw = df_raw_full.iloc[4:end_row].copy()
+            df_raw.columns = df_raw_full.iloc[3].values
+    else:
+        df_raw = pd.read_excel(filepath, sheet_name=sheet_name, header=3)
+        df_raw = df_raw.iloc[1:].copy()
+
     df_raw.rename(columns={df_raw.columns[0]: 'Time'}, inplace=True)
-    df = df_raw.iloc[1:].copy()
+    df = df_raw.copy()
 
     def quarter_to_date(q_str):
         if not isinstance(q_str, str):
             return np.nan
-        parts = q_str.split(' ')
-        if len(parts) == 2:
+        parts = q_str.strip().split(' ')
+        if len(parts) == 2 and parts[1] in ['Q1', 'Q2', 'Q3', 'Q4']:
             year, q = parts
             q_map = {'Q1': '-03-31', 'Q2': '-06-30', 'Q3': '-09-30', 'Q4': '-12-31'}
-            return f"{year}{q_map.get(q, '-01-01')}"
+            return f"{year}{q_map.get(q)}"
         return np.nan
 
-    df['Date'] = df['Time'].apply(lambda x: pd.to_datetime(quarter_to_date(x), errors='coerce'))
+    df['Date'] = pd.to_datetime(df['Time'].apply(quarter_to_date), errors='coerce')
 
-    cols_to_convert = df.columns[1:-1]
+    cols_to_convert = [c for c in df.columns if c not in ['Time', 'Date']]
     for col in cols_to_convert:
         df[col] = pd.to_numeric(df[col], errors='coerce')
 

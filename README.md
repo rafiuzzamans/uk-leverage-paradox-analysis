@@ -89,14 +89,14 @@ Evaluating quarterly return variance for the latest complete fiscal year highlig
 
 ---
 
-### 5. Insight 5: Asset Base vs Profitability (Risk-Weighted)
-Mapping Total Non-Financial Assets against the Net Rate of Return—weighted by the liability-to-asset ratio—examines the link between asset scale and profitability.
+### 5. Insight 5: Liabilities Relative to Non-Financial Assets vs Profitability
+Empirical evaluation of corporate financial liabilities relative to non-financial assets against profitability across 27 years (1997–2023):
 
 ![Asset Base vs Profitability](figures/chart2_asset_vs_return.png)
 
-- **📊 Visual Guide**: Scatter plot mapping Total Non-Financial Assets (£ million, log scale) against Net Rate of Return (%, vertical axis), with bubble size proportional to the Liability-to-Asset ratio.
-- **🔍 Empirical Observation**: Higher asset scale does not automatically equate to higher rates of return. Sub-sectors with smaller asset bases often carry elevated leverage ratios relative to their size.
-- **💡 Strategic Takeaway**: Raw scale is not a substitute for capital productivity; managing leverage ratios and operating efficiency is paramount across all enterprise tiers.
+- **📊 Visual Guide**: Annual regression plot mapping the corporate liability ratio (Financial Liabilities ÷ Non-Financial Assets, %) against Net Rate of Return (Annual Avg, %) from 1997 to 2023.
+- **🔍 Empirical Observation**: The annual liability ratio exhibits a moderate positive correlation with net profitability ($r = 0.45, n = 27$), reflecting return amplification during macro expansionary cycles.
+- **💡 Strategic Takeaway**: While leverage can amplify accounting returns, elevated liabilities relative to physical assets increase vulnerability to debt-servicing and refinancing shocks.
 
 ---
 
@@ -106,7 +106,7 @@ Evaluating whether higher capital spending translates directly into immediate re
 ![GFCF vs Profitability](figures/chart7_investment_vs_future_return.png)
 
 - **📊 Visual Guide**: Scatter plot pairing quarterly capital expenditure (GFCF, £ million, log scale) against Next Quarter Net Rate of Return (%) across sub-sectors.
-- **🔍 Empirical Observation**: The pooled correlation across sectors is weak negative ($r = -0.21, n = 848$), demonstrating that aggregate investment volume does not yield a linear, immediate uplift in next-quarter returns.
+- **🔍 Empirical Observation**: The pooled descriptive correlation across sectors is weak negative ($r = -0.21, n = 424$ unique sector-quarters), demonstrating that gross quarterly investment volume does not produce an immediate next-quarter return surge.
 - **💡 Strategic Takeaway**: Disproves simplistic "spend-to-profit" assumptions. Corporate leadership should evaluate capex through the lens of capital efficiency, gestation lags, and demand-cycle timing rather than gross expenditure targets.
 
 ---
@@ -122,14 +122,14 @@ Multi-variable correlation analysis across aggregate UK non-financial corporate 
 
 ---
 
-### 8. Insight 8: Exploratory Feature Importance
-Decomposing relative feature weights in predicting aggregate corporate net return:
+### 8. Insight 8: Exploratory Feature Importance (Non-Circular)
+Decomposing relative feature weights in explaining aggregate corporate net return using macro balance-sheet indicators:
 
 ![Feature Importance](figures/chart8_rf_feature_importance.png)
 
-- **📊 Visual Guide**: Horizontal bar chart showing relative feature importances from a Random Forest regressor fitted across available annual macro and sector return variables.
-- **🔍 Empirical Observation**: Sub-sector performance indicators (Service and Manufacturing return rates) and liability ratios account for the majority of in-sample explanatory weight, ranking above aggregate top-line asset growth rates.
-- **💡 Strategic Takeaway**: Illustrates that micro-sector health and capital structure metrics provide stronger informational signals for profitability modeling than broad aggregate asset expansion.
+- **📊 Visual Guide**: Horizontal bar chart showing relative feature importances from an exploratory Random Forest regressor fitted on exogenous macro balance-sheet variables (Asset Growth Rate, Liability Ratio, and GFCF Investment) without endogenous sector return components.
+- **🔍 Empirical Observation**: The Liability Ratio and GFCF Investment volume carry the primary relative explanatory weight for aggregate corporate net profitability, with Asset Growth Rate contributing marginal weight.
+- **💡 Strategic Takeaway**: Confirms that capital structure (liability-to-asset configuration) and capital allocation pace are more informative macro signals for profitability than raw top-line asset growth.
 
 ---
 
