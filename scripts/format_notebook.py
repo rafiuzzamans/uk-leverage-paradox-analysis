@@ -135,8 +135,8 @@ cells = [
         "cell_type": "markdown",
         "metadata": {},
         "source": [
-            "### 5. Chart 2: Asset Base vs Profitability (Latest Year)\n",
-            "Scatter bubble chart of Total Non-Financial Assets (£m) vs Net Rate of Return (%), with bubble size reflecting the debt/asset liability ratio."
+            "### 5. Chart 2: Liabilities Relative to Non-Financial Assets vs Rate of Return (1997–2023)\n",
+            "Annual regression plot examining the empirical relationship between corporate liability ratio (Financial Liabilities ÷ Non-Financial Assets) and net profitability across 27 years."
         ]
     },
     {
@@ -145,26 +145,12 @@ cells = [
         "metadata": {},
         "outputs": [],
         "source": [
-            "latest_year = df_pnfc['Year'].max()\n",
-            "df_profit_annual = df_profit_long.groupby(['Sector', df_profit_long['Date'].dt.year])['NetRateReturn'].mean().reset_index()\n",
-            "df_profit_annual.rename(columns={'Date': 'Year'}, inplace=True)\n",
-            "\n",
-            "merged_c2 = pd.merge(df_pnfc[df_pnfc['Year'] == latest_year],\n",
-            "                     df_profit_annual[df_profit_annual['Year'] == latest_year],\n",
-            "                     on='Year', how='inner', suffixes=('_BS', '_PR'))\n",
-            "\n",
-            "plt.figure(figsize=(10, 7))\n",
-            "plt.scatter(merged_c2['TotalAssets'], merged_c2['NetRateReturn'],\n",
-            "            s=merged_c2['TotalLiabilities']/merged_c2['TotalAssets'] * 1200,\n",
-            "            alpha=0.7, edgecolors='navy', linewidth=1, c='#3b82f6')\n",
-            "\n",
-            "for i, sector in enumerate(merged_c2['Sector_PR']):\n",
-            "    plt.annotate(sector, (merged_c2['TotalAssets'].iat[i], merged_c2['NetRateReturn'].iat[i]),\n",
-            "                 textcoords=\"offset points\", xytext=(8,-4), ha='left', fontweight='semibold')\n",
-            "\n",
-            "plt.xscale('log')\n",
-            "plt.title(f'Assets vs Rate of Return by PNFC Sector (Annual Avg – {latest_year})', fontsize=14)\n",
-            "plt.xlabel('Total Non-Financial Assets (£ million, log scale)', fontsize=12)\n",
+            "plt.figure(figsize=(9, 6))\n",
+            "sns.regplot(data=df_corr, x='LiabilityRatio', y='NetRateReturn',\n",
+            "            scatter_kws={'alpha': 0.75, 'color': '#3b82f6', 's': 60},\n",
+            "            line_kws={'color': '#ef4444', 'linewidth': 2})\n",
+            "plt.title('Liabilities Relative to Non-Financial Assets vs Rate of Return (1997-2023)', fontsize=14)\n",
+            "plt.xlabel('Financial Liabilities ÷ Non-Financial Assets (%)', fontsize=12)\n",
             "plt.ylabel('Net Rate of Return (Annual Avg, %)', fontsize=12)\n",
             "plt.grid(True, linestyle='--', alpha=0.7)\n",
             "plt.tight_layout()\n",
@@ -215,8 +201,8 @@ cells = [
         "cell_type": "markdown",
         "metadata": {},
         "source": [
-            "### 7. Chart 4: Sector Contribution to Total Assets Over Time (2010–2023)\n",
-            "Stacked area chart confirming private corporations are the primary driver of capital expansion."
+            "### 7. Chart 4: Sector Contribution to Total Assets Over Time (2009–2023)\n",
+            "Stacked area chart confirming private non-financial corporations constitute the vast majority of non-financial corporate assets."
         ]
     },
     {
@@ -225,15 +211,13 @@ cells = [
         "metadata": {},
         "outputs": [],
         "source": [
-            "df_nfc_assets = df_nfc[['Year', 'TotalAssets']].rename(columns={'TotalAssets': 'Non-Financial Corp Assets'})\n",
+            "df_pnfc_assets = df_pnfc[['Year', 'TotalAssets']].rename(columns={'TotalAssets': 'Private Non-Financial Corp Assets'})\n",
             "df_pc_assets = df_pc[['Year', 'TotalAssets']].rename(columns={'TotalAssets': 'Public Corp Assets'})\n",
-            "df_assets_total = pd.merge(df_nfc_assets, df_pc_assets, on='Year', how='inner')\n",
-            "df_assets_total['Private Non-Financial Corp Assets'] = df_pnfc['TotalAssets']\n",
-            "df_pivot = df_assets_total[['Year', 'Private Non-Financial Corp Assets', 'Public Corp Assets']].set_index('Year').tail(15)\n",
+            "df_pivot = pd.merge(df_pnfc_assets, df_pc_assets, on='Year', how='inner').set_index('Year').tail(15)\n",
             "\n",
             "fig, ax = plt.subplots(figsize=(11, 5))\n",
             "df_pivot.plot(kind='area', stacked=True, ax=ax, colormap='viridis', alpha=0.85)\n",
-            "plt.title('Non-Financial Corporations Total Assets by Sector (2010-2023)', fontsize=14)\n",
+            "plt.title('Non-Financial Corporations Total Assets by Sector (2009-2023)', fontsize=14)\n",
             "plt.xlabel('Year', fontsize=12)\n",
             "plt.ylabel('Assets (£ million)', fontsize=12)\n",
             "plt.legend(loc='upper left', title='Sector')\n",
@@ -330,7 +314,8 @@ cells = [
         "cell_type": "markdown",
         "metadata": {},
         "source": [
-            "### 11. Chart 8: Machine Learning – Drivers of PNFC Profitability (Random Forest)"
+            "### 11. Chart 8: Exploratory Analysis – Drivers of PNFC Profitability (Random Forest)\n",
+            "Non-circular exploratory regression evaluating macro balance-sheet predictors (asset growth rate, liability ratio, GFCF investment) without endogenous sector components."
         ]
     },
     {
@@ -340,21 +325,8 @@ cells = [
         "outputs": [],
         "source": [
             "df_model = df_corr.dropna().copy()\n",
-            "df_pnfc_sector_annual = df_profit_annual[df_profit_annual['Sector'] != 'All Private Non-Financial Corporations'].copy()\n",
-            "df_pnfc_sector_annual = df_pnfc_sector_annual.pivot(index='Year', columns='Sector', values='NetRateReturn')\n",
-            "df_pnfc_sector_annual = df_pnfc_sector_annual.apply(lambda x: x.fillna(x.mean()), axis=0)\n",
-            "df_model = df_model.merge(df_pnfc_sector_annual, on='Year', how='inner')\n",
-            "df_model.rename(columns={\n",
-            "    'Manufacturing Private Non-Financial Corporations': 'NetReturn_Manufacturing',\n",
-            "    'Service Private Non-Financial Corporations': 'NetReturn_Service',\n",
-            "    'UK Continental Shelf': 'NetReturn_UKCS',\n",
-            "    'UK Non-Continental Shelf Private Non-Financial Corporations': 'NetReturn_NonUKCS'\n",
-            "}, inplace=True)\n",
-            "\n",
+            "X = df_model[['AssetGrowthRate', 'LiabilityRatio', 'InvestmentAmount']]\n",
             "y = df_model['NetRateReturn']\n",
-            "features = ['AssetGrowthRate', 'LiabilityRatio', 'InvestmentAmount', 'NetReturn_Manufacturing', 'NetReturn_Service']\n",
-            "X = df_model[[c for c in features if c in df_model.columns]].dropna()\n",
-            "y = y.loc[X.index]\n",
             "\n",
             "if len(X) >= 5:\n",
             "    model = RandomForestRegressor(n_estimators=100, random_state=42)\n",
@@ -363,7 +335,7 @@ cells = [
             "\n",
             "    plt.figure(figsize=(8, 5))\n",
             "    importances.sort_values().plot(kind='barh', color='#0ea5e9')\n",
-            "    plt.title('Feature Importances – Drivers of PNFC Net Rate of Return', fontsize=14)\n",
+            "    plt.title('Exploratory Feature Importances – PNFC Net Rate of Return', fontsize=14)\n",
             "    plt.xlabel('Relative Importance (Random Forest)', fontsize=12)\n",
             "    plt.grid(axis='x', linestyle='--', alpha=0.7)\n",
             "    plt.tight_layout()\n",

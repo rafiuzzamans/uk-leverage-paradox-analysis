@@ -24,18 +24,14 @@ def plot_profitability_trend(df_profit_long: pd.DataFrame, output_path: str = No
     return plt.gca()
 
 
-def plot_asset_vs_profitability(merged_df: pd.DataFrame, year: int, output_path: str = None):
-    """Chart 2: Asset Base vs Profitability by PNFC Sector (Bubble Chart)."""
+def plot_asset_vs_profitability(df_corr: pd.DataFrame, output_path: str = None):
+    """Chart 2: Liabilities Relative to Non-Financial Assets vs Rate of Return (Annual, 1997-2023)."""
     plt.figure(figsize=(9, 6))
-    plt.scatter(merged_df['TotalAssets'], merged_df['NetRateReturn'],
-                s=merged_df['TotalLiabilities'] / merged_df['TotalAssets'] * 1200,
-                alpha=0.7, edgecolors='navy', linewidth=1, c='#3b82f6')
-    for i, sector in enumerate(merged_df['Sector_PR']):
-        plt.annotate(sector, (merged_df['TotalAssets'].iat[i], merged_df['NetRateReturn'].iat[i]),
-                     textcoords="offset points", xytext=(8, -4), ha='left', fontweight='semibold')
-    plt.xscale('log')
-    plt.title(f'Assets vs Rate of Return by PNFC Sector (Annual Avg – {year})', fontsize=13, fontweight='bold')
-    plt.xlabel('Total Non-Financial Assets (£ million, log scale)', fontsize=11)
+    sns.regplot(data=df_corr, x='LiabilityRatio', y='NetRateReturn',
+                scatter_kws={'alpha': 0.75, 'color': '#3b82f6', 's': 60},
+                line_kws={'color': '#ef4444', 'linewidth': 2})
+    plt.title('Liabilities Relative to Non-Financial Assets vs Rate of Return (1997-2023)', fontsize=13, fontweight='bold')
+    plt.xlabel('Financial Liabilities ÷ Non-Financial Assets (%)', fontsize=11)
     plt.ylabel('Net Rate of Return (Annual Avg, %)', fontsize=11)
     plt.tight_layout()
     if output_path:

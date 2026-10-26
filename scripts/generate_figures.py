@@ -71,11 +71,6 @@ df_corr = pd.concat([df_corr_base, df_invest_annual, df_nfc_annual_profit], axis
 vars_for_corr = ['AssetGrowthRate', 'LiabilityRatio', 'InvestmentAmount', 'NetRateReturn']
 
 df_pc = load_ons_annual_data_excel(FILE_BALANCE_EXCEL, sheet_name='Table 4', sector_col_name='Public Non-Financial')
-df_nfc_assets = df_nfc[['Year', 'TotalAssets']].rename(columns={'TotalAssets': 'Non-Financial Corp Assets'})
-df_pc_assets = df_pc[['Year', 'TotalAssets']].rename(columns={'TotalAssets': 'Public Corp Assets'})
-df_assets_total = pd.merge(df_nfc_assets, df_pc_assets, on='Year', how='inner')
-df_assets_total['Private Non-Financial Corp Assets'] = df_pnfc['TotalAssets']
-df_pivot = df_assets_total[['Year', 'Private Non-Financial Corp Assets', 'Public Corp Assets']].set_index('Year').tail(15)
 
 df_lw_pnfc = df_pnfc[(df_pnfc['Year'] >= 2010)].copy()
 
@@ -93,17 +88,13 @@ plt.tight_layout()
 plt.savefig('figures/chart1_profitability_trend.png', dpi=300)
 plt.close()
 
-# 2. Chart 2
+# 2. Chart 2: Annual Liabilities relative to Assets vs Rate of Return (1997-2023)
 plt.figure(figsize=(9, 6))
-plt.scatter(merged_c2['TotalAssets'], merged_c2['NetRateReturn'],
-            s=merged_c2['TotalLiabilities']/merged_c2['TotalAssets'] * 1200,
-            alpha=0.7, edgecolors='navy', linewidth=1, c='#3b82f6')
-for i, sector in enumerate(merged_c2['Sector_PR']):
-    plt.annotate(sector, (merged_c2['TotalAssets'].iat[i], merged_c2['NetRateReturn'].iat[i]),
-                 textcoords="offset points", xytext=(8, -4), ha='left', fontweight='semibold')
-plt.xscale('log')
-plt.title(f'Assets vs Rate of Return by PNFC Sector (Latest Annual Avg – {latest_year})', fontsize=13, fontweight='bold')
-plt.xlabel('Total Non-Financial Assets (£ million, log scale)', fontsize=11)
+sns.regplot(data=df_corr, x='LiabilityRatio', y='NetRateReturn',
+            scatter_kws={'alpha': 0.75, 'color': '#3b82f6', 's': 60},
+            line_kws={'color': '#ef4444', 'linewidth': 2})
+plt.title('Liabilities Relative to Non-Financial Assets vs Rate of Return (1997-2023)', fontsize=13, fontweight='bold')
+plt.xlabel('Financial Liabilities ÷ Non-Financial Assets (%)', fontsize=11)
 plt.ylabel('Net Rate of Return (Annual Avg, %)', fontsize=11)
 plt.tight_layout()
 plt.savefig('figures/chart2_asset_vs_return.png', dpi=300)
@@ -119,9 +110,13 @@ plt.savefig('figures/chart3_correlation_matrix.png', dpi=300)
 plt.close()
 
 # 4. Chart 4
+df_pnfc_assets = df_pnfc[['Year', 'TotalAssets']].rename(columns={'TotalAssets': 'Private Non-Financial Corp Assets'})
+df_pc_assets = df_pc[['Year', 'TotalAssets']].rename(columns={'TotalAssets': 'Public Corp Assets'})
+df_pivot = pd.merge(df_pnfc_assets, df_pc_assets, on='Year', how='inner').set_index('Year').tail(15)
+
 fig, ax = plt.subplots(figsize=(11, 5))
 df_pivot.plot(kind='area', stacked=True, ax=ax, colormap='viridis', alpha=0.85)
-plt.title('Non-Financial Corporations Total Assets by Sector (2010-2023)', fontsize=13, fontweight='bold')
+plt.title('Non-Financial Corporations Total Assets by Sector (2009-2023)', fontsize=13, fontweight='bold')
 plt.xlabel('Year', fontsize=11)
 plt.ylabel('Assets (£ million)', fontsize=11)
 plt.legend(loc='upper left', title='Sector')
@@ -164,23 +159,10 @@ plt.tight_layout()
 plt.savefig('figures/chart7_investment_vs_future_return.png', dpi=300)
 plt.close()
 
-# 8. Chart 8
+# 8. Chart 8 (Non-circular exploratory regression)
 df_model = df_corr.dropna().copy()
-df_pnfc_sector_annual = df_profit_annual[df_profit_annual['Sector'] != 'All Private Non-Financial Corporations'].copy()
-df_pnfc_sector_annual = df_pnfc_sector_annual.pivot(index='Year', columns='Sector', values='NetRateReturn')
-df_pnfc_sector_annual = df_pnfc_sector_annual.apply(lambda x: x.fillna(x.mean()), axis=0)
-df_model = df_model.merge(df_pnfc_sector_annual, on='Year', how='inner')
-df_model.rename(columns={
-    'Manufacturing Private Non-Financial Corporations': 'NetReturn_Manufacturing',
-    'Service Private Non-Financial Corporations': 'NetReturn_Service',
-    'UK Continental Shelf': 'NetReturn_UKCS',
-    'UK Non-Continental Shelf Private Non-Financial Corporations': 'NetReturn_NonUKCS'
-}, inplace=True)
-
+X = df_model[['AssetGrowthRate', 'LiabilityRatio', 'InvestmentAmount']]
 y = df_model['NetRateReturn']
-features = ['AssetGrowthRate', 'LiabilityRatio', 'InvestmentAmount', 'NetReturn_Manufacturing', 'NetReturn_Service']
-X = df_model[[c for c in features if c in df_model.columns]].dropna()
-y = y.loc[X.index]
 
 if len(X) >= 5:
     model = RandomForestRegressor(n_estimators=100, random_state=42)
