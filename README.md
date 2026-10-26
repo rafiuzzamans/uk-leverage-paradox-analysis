@@ -25,7 +25,7 @@ Traditional aggregate macroeconomic reports often treat the UK corporate sector 
 1. **Balance Sheet Expansion & Net Worth Recovery**: PNFC gross financial liabilities expanded from £4.21T in 2010 to £5.91T in 2023 (+40.4%). Meanwhile, aggregate corporate Net Worth (B.90) transitioned from negative (-£237bn in 2010) into positive territory post-2018, reaching +£1.21T by 2023 as tangible assets grew faster than liabilities.
 2. **Sectoral Divergence**: The UK corporate economy exhibits persistent structural divergence between a resilient **Service Sector** (returns oscillating tightly between 11.9% and 19.0%) and a volatile **UK Continental Shelf (UKCS)** extraction sector (spanning from -5.9% to 23.6%).
 3. **Asset Stock Dominance**: Private Non-Financial Corporations hold **84% to 91%** of total non-financial corporate tangible capital stock, confirming private sector health dictates macro resilience.
-4. **Capital Investment vs Returns**: Pooled correlation between quarterly non-financial corporate GFCF and subsequent-quarter net returns is weak negative ($r = -0.21, n = 848$), illustrating that gross spending volume alone does not dictate near-term profitability uplift.
+4. **Capital Investment vs Returns**: Pooled correlation between quarterly non-financial corporate GFCF and subsequent-quarter net returns is weak negative ($r = -0.21, n = 424$), illustrating that gross spending volume alone does not dictate near-term profitability uplift.
 
 ---
 
