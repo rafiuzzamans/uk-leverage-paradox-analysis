@@ -11,7 +11,7 @@
 
 ### 📋 Version History
 - **v1.1.0 (October 2026)**: Fixed balance-sheet series extraction using official ONS CDID codes (`NG2Y`, `NLBB`, `TMPN`), added MIT license, refreshed figures with verified historical values, and clarified debt vs equity liabilities breakdown.
-- **v1.0.0 (December 2025)**: Initial academic baseline submission and exploratory analysis pipeline.
+- **v1.0.0 (December 2025)**: Initial academic baseline submission and exploratory analysis pipeline. *(Note: The v1.0.0 git snapshot was reconstructed on 26 Oct 2026; original git history was overwritten).*
 
 ---
 
@@ -117,7 +117,7 @@ Multi-variable correlation analysis across aggregate UK non-financial corporate 
 ![Correlation Matrix](figures/chart3_correlation_matrix.png)
 
 - **📊 Visual Guide**: Heatmap of Pearson correlation coefficients across annual corporate variables: Asset Growth Rate, Liability Ratio, Investment Amount, and Net Rate of Return.
-- **🔍 Empirical Observation**: The annual Liability Ratio correlates positively with Net Rate of Return ($r \approx 0.59$), reflecting debt-leveraged return amplification during expansion phases, while annual GFCF investment correlates negatively with the net return rate ($r \approx -0.47$).
+- **🔍 Empirical Observation**: The annual Liability Ratio correlates positively with Net Rate of Return ($r \approx 0.45$), reflecting debt-leveraged return amplification during expansion phases, while annual GFCF investment correlates negatively with the net return rate ($r \approx -0.47$).
 - **💡 Strategic Takeaway**: Leverage amplifies returns during expansionary periods, but heightened liability ratios simultaneously increase balance sheet vulnerability when debt refinancing costs rise.
 
 ---

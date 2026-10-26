@@ -14,56 +14,9 @@ FILE_PROFITABILITY_EXCEL = '2024q2referencetables.xlsx'
 FILE_INVESTMENT_EXCEL = 'ukea2023q2table2corpssectorv2.xlsx'
 FILE_BALANCE_EXCEL = 'nbsreferencetables2024.xlsx'
 
-def load_ons_quarterly_data_excel(filepath, sheet_name):
-    df_raw = pd.read_excel(filepath, sheet_name=sheet_name, header=3)
-    df_raw.rename(columns={df_raw.columns[0]: 'Time'}, inplace=True)
-    df = df_raw.iloc[1:].copy()
-    def quarter_to_date(q_str):
-        if not isinstance(q_str, str): return np.nan
-        parts = q_str.split(' ')
-        if len(parts) == 2:
-            year, q = parts
-            q_map = {'Q1': '-03-31', 'Q2': '-06-30', 'Q3': '-09-30', 'Q4': '-12-31'}
-            return f"{year}{q_map.get(q, '-01-01')}"
-        return np.nan
-    df['Date'] = df['Time'].apply(lambda x: pd.to_datetime(quarter_to_date(x), errors='coerce'))
-    cols_to_convert = df.columns[1:-1]
-    for col in cols_to_convert:
-        df[col] = pd.to_numeric(df[col], errors='coerce')
-    return df
-
-def load_ons_annual_data_excel(filepath, sheet_name, sector_col_name):
-    df_raw = pd.read_excel(filepath, sheet_name=sheet_name, header=1)
-    def clean_col_name(col):
-        if col.strip() == 'Non-financial assets': return 'Total Assets'
-        if col.strip() == 'Financial assets and liabilities': return 'Financial liabilities Total'
-        if col.strip() == 'Total': return 'Net worth'
-        if 'AN.11' in col: return 'AN.11 Fixed assets Total'
-        if 'AN.21' in col: return 'AN.21 Natural resources Total'
-        if 'Inventories' in col: return 'Inventories'
-        return col.split('£million at end year)')[0].strip() if '£million at end year)' in col else col.strip()
-
-    df_raw.columns = [clean_col_name(col) for col in df_raw.columns]
-    df_raw.rename(columns={df_raw.columns[0]: 'Year'}, inplace=True)
-    df = df_raw[pd.to_numeric(df_raw['Year'], errors='coerce').notna()].copy()
-    df['Year'] = df['Year'].astype(int)
-    expected_numeric_cols = ['Total Assets', 'Financial liabilities Total', 'Net worth']
-    for col in expected_numeric_cols:
-        if col in df.columns:
-            df[col] = pd.to_numeric(df[col], errors='coerce')
-
-    if 'Financial liabilities Total' in df.columns:
-        df['TotalLiabilities'] = df['Financial liabilities Total']
-    else:
-        df['TotalLiabilities'] = np.nan
-
-    if 'Total Assets' in df.columns:
-        df['TotalAssets'] = df['Total Assets']
-    else:
-        df['TotalAssets'] = np.nan
-
-    df['Sector'] = sector_col_name
-    return df[['Year', 'Sector', 'TotalAssets', 'TotalLiabilities', 'Net worth']].dropna(subset=['TotalAssets', 'TotalLiabilities'])
+import sys
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from src.data_loader import load_ons_quarterly_data_excel, load_ons_annual_data_excel
 
 print("Processing ONS Data...")
 df_profit = load_ons_quarterly_data_excel(FILE_PROFITABILITY_EXCEL, sheet_name='Table 2')
